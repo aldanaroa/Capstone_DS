@@ -69,17 +69,21 @@ def get_pie_chart(entered_site):
     filtered_df = spacex_df[['Launch Site','class']]
     if entered_site == 'ALL':
         fig = px.pie(filtered_df, values='class', names='Launch Site',
-        title="Succes Rate of Launch for site: {}".format(entered_site))
+                color_discrete_sequence = px.colors.qualitative.Set3,
+                width=800, height=400,
+                title="Total Landing Success Proportion by Site: {}".format(entered_site))
         return fig
     else:
 
         filtered_df = spacex_df[spacex_df['Launch Site'] == entered_site]
         filtered_df['success']= filtered_df['class'].astype('bool')
-        names = filtered_df.groupby('class').count().reset_index()['class']
+        #names = filtered_df.groupby('class').count().reset_index()['class']
         values = filtered_df.groupby('class').count().reset_index()['success']
 
-        fig = px.pie(filtered_df, values=values, names= names,
-        title="Succes Rate of Launch for site: {}".format(entered_site))
+        fig = px.pie(filtered_df, values=values, names= values.index, color = values.index,
+                color_discrete_sequence = px.colors.qualitative.Set1,
+                width=800, height=400,
+                title="Landing Success Proportion for site: {}".format(entered_site))
         return fig
             # return the outcomes piechart for a selected site
 
@@ -96,13 +100,15 @@ def scatter_chart(entered_site, slider_range):
     mask = (filtered_df['Payload Mass (kg)'] >= low) & (filtered_df['Payload Mass (kg)'] <= high)
     if entered_site == 'ALL':
         fig = px.scatter(filtered_df[mask], x='Payload Mass (kg)', y='class', color = 'Booster Version Category',
-        title="Correlation between Payload and Success for site: {}".format(entered_site))
+            size =(filtered_df[mask]['Flight Number']+20)/2, size_max = 10,
+            title="Correlation between Payload and Success for site: {}".format(entered_site))
         return fig
     else:
 
         filtered_df = spacex_df[spacex_df['Launch Site'] == entered_site]
 
         fig = px.scatter(filtered_df[mask], x='Payload Mass (kg)', y='class', color = 'Booster Version Category', size = 'Flight Number',
+        labels = {'Booster Version Category': 'Booster Version'},
         title="Correlation between Payload and Success for site: {}".format(entered_site))
         return fig
             # return the outcomes piechart for a selected site
